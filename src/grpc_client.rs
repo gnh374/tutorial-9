@@ -11,14 +11,14 @@ pub mod services{
 
 #[tokio::main]
 async fn main()->Result<(), Box<dyn std::error::Error>>{
-    let mut client  = PaymentServiceClient::connect("http://[::1]:50051").await?;
+    let mut client  = PaymentServiceClient::connect("http://[::1]:50052").await?;
     let request = tonic::Request::new(PaymentRequest{
         user_id : "user_123".to_string(),
         amount : 100.0,
     });
     let response = client.process_payment(request).await?;
     println!("RESPONSE={:?}", response.into_inner());
-    let mut transaction_client = TransactionServiceClient::connect("http://[::1]:50051").await?;
+    let mut transaction_client = TransactionServiceClient::connect("http://[::1]:50052").await?;
     let request = tonic::Request::new(TransactionRequest{
         user_id : "user_123".to_string(),
     });
@@ -27,7 +27,7 @@ async fn main()->Result<(), Box<dyn std::error::Error>>{
     while let Some(transaction) = stream.message().await?{
         print!("Transaction: {:?}", transaction);
     }
-    let channel = Channel::from_static("http://[::1]:50051").connect().await?;
+    let channel = Channel::from_static("http://[::1]:50052").connect().await?;
     let mut client = ChatServiceClient::new(channel);
 
     let (tx,rx):(Sender<ChatMessage>, Receiver<ChatMessage>) = mpsc::channel(32);
